@@ -55,8 +55,9 @@ def fgsm_attack(
     """
     nn_model = model.model
     nn_model.eval()
+    device = next(nn_model.parameters()).device
 
-    img_tensor = preprocess(frame, imgsz).requires_grad_(True)
+    img_tensor = preprocess(frame, imgsz).to(device).requires_grad_(True)
 
     with torch.enable_grad():
         raw = nn_model(img_tensor)  # [1, 84, 8400] for COCO-trained model
@@ -72,7 +73,7 @@ def fgsm_attack(
     adv_tensor = (img_tensor - perturbation).clamp(0.0, 1.0)
 
     # Convert back to BGR ndarray at original resolution
-    adv_np = adv_tensor.squeeze().permute(1, 2, 0).detach().numpy()
+    adv_np = adv_tensor.squeeze().permute(1, 2, 0).detach().cpu().numpy()
     adv_bgr = cv2.cvtColor((adv_np * 255).astype(np.uint8), cv2.COLOR_RGB2BGR)
     return cv2.resize(adv_bgr, (frame.shape[1], frame.shape[0]))
 
@@ -92,8 +93,9 @@ def pgd_attack(
     """
     nn_model = model.model
     nn_model.eval()
+    device = next(nn_model.parameters()).device
 
-    original = preprocess(frame, imgsz)
+    original = preprocess(frame, imgsz).to(device)
     adv = original.clone().requires_grad_(True)
 
     for _ in range(iterations):
@@ -114,7 +116,7 @@ def pgd_attack(
 
         adv.requires_grad_(True)
 
-    adv_np = adv.squeeze().permute(1, 2, 0).detach().numpy()
+    adv_np = adv.squeeze().permute(1, 2, 0).detach().cpu().numpy()
     adv_bgr = cv2.cvtColor((adv_np * 255).astype(np.uint8), cv2.COLOR_RGB2BGR)
     return cv2.resize(adv_bgr, (frame.shape[1], frame.shape[0]))
 
