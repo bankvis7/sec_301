@@ -1,0 +1,28 @@
+# Model weights (large binary files — download via ultralytics)
+*.pt
+*.pth
+models/
+
+# Generated outputs and test images
+outputs/
+
+# Dataset files (download separately)
+data/crowdhuman/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Word lock files
+~$*.docx
+
+# macOS
+.DS_Store
+
+# Build artifacts
+.dist/
