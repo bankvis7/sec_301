@@ -26,6 +26,7 @@ def train(dataset: str, epochs: int, imgsz: int, batch: int, base_model: str) ->
     model = YOLO(base_model)
 
     results = model.train(
+        model=base_model,
         data=DATASET_YAMLS[dataset],
         epochs=epochs,
         imgsz=imgsz,
@@ -37,9 +38,11 @@ def train(dataset: str, epochs: int, imgsz: int, batch: int, base_model: str) ->
         device=0 if _has_gpu() else "cpu",
     )
 
-    best_weights = Path("models/crowd_counter/weights/best.pt")
+    best_weights = Path(results.save_dir) / "weights" / "best.pt"
     if best_weights.exists():
         print(f"\n[OK] Best weights saved to: {best_weights}")
+    else:
+        print(f"\n[WARN] best.pt not found in {results.save_dir}")
     return results
 
 
